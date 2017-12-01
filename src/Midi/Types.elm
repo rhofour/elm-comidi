@@ -21,6 +21,18 @@ type alias Ticks =
     Int
 
 
+type alias Channel =
+    Int
+
+
+type alias Note =
+    Int
+
+
+type alias Velocity =
+    Int
+
+
 {-| Midi Event
 -}
 type MidiEvent
@@ -42,8 +54,8 @@ type MidiEvent
     | SysEx String
     | Unspecified Int (List Int)
       -- channel messages
-    | NoteOn Int Int Int
-    | NoteOff Int Int Int
+    | NoteOn Channel Note Velocity
+    | NoteOff Channel Note Velocity
     | NoteAfterTouch Int Int Int
     | ControlChange Int Int Int
     | ProgramChange Int Int
