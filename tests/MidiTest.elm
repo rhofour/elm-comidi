@@ -81,6 +81,38 @@ fuzzPitchBend =
     Fuzz.map2 PitchBend fuzzChannel (intRange 0 16383)
 
 
+fuzzSysExByte : Fuzzer Int
+fuzzSysExByte =
+    intRange 0 127
+
+
+listOfLength : Fuzzer a -> Int -> Fuzzer (List a)
+listOfLength fuzzer listLen =
+    List.foldl
+        (Fuzz.map2 (::))
+        (Fuzz.constant [])
+        (List.repeat listLen fuzzer)
+
+
+nonEmptyList : Fuzzer a -> Fuzzer (List a)
+nonEmptyList fuzzer =
+    Fuzz.andThen
+        (listOfLength fuzzer)
+        (intRange 1 32)
+
+
+fuzzSysEx : Fuzzer MidiEvent
+fuzzSysEx =
+    Fuzz.map
+        (SysEx << String.fromList << (List.map Char.fromCode))
+        (nonEmptyList fuzzSysExByte)
+
+
+fuzzRunningStatus : Fuzzer MidiEvent
+fuzzRunningStatus =
+    Fuzz.map2 RunningStatus (intRange 0 127) (intRange 0 127)
+
+
 fuzzMidiEvent : Fuzzer MidiEvent
 fuzzMidiEvent =
     Fuzz.oneOf
@@ -90,6 +122,7 @@ fuzzMidiEvent =
         , fuzzControlChange
         , fuzzProgramChange
         , fuzzPitchBend
+        , fuzzRunningStatus
         ]
 
 

@@ -10,6 +10,7 @@ module Midi.Generate exposing (event, recording)
 -}
 
 import Bitwise
+import Char
 import Midi.Types exposing (..)
 
 
@@ -20,6 +21,9 @@ type alias Byte =
 event : MidiEvent -> List Byte
 event event =
     case event of
+        SysEx str ->
+            0xF0 :: ((List.map Char.toCode (String.toList str)) ++ [ 0xF7 ])
+
         NoteOn channel note velocity ->
             [ 144 + channel, note, velocity ]
 
@@ -47,6 +51,9 @@ event event =
                     Bitwise.shiftRightBy 7 bend
             in
                 [ 224 + channel, lower, upper ]
+
+        RunningStatus x y ->
+            [ x, y ]
 
         _ ->
             Debug.crash "TODO"

@@ -56,11 +56,11 @@ type MidiEvent
       -- channel messages
     | NoteOn Channel Note Velocity
     | NoteOff Channel Note Velocity
-    | NoteAfterTouch Int Int Int
-    | ControlChange Int Int Int
-    | ProgramChange Int Int
-    | ChannelAfterTouch Int Int
-    | PitchBend Int Int
+    | NoteAfterTouch Channel Note Velocity
+    | ControlChange Channel Int Int
+    | ProgramChange Channel Int
+    | ChannelAfterTouch Channel Velocity
+    | PitchBend Channel Int
     | RunningStatus Int Int
 
 
