@@ -116,7 +116,8 @@ fuzzRunningStatus =
 fuzzMidiEvent : Fuzzer MidiEvent
 fuzzMidiEvent =
     Fuzz.oneOf
-        [ fuzzNoteOn
+        [ fuzzSysEx
+        , fuzzNoteOn
         , fuzzNoteOff
         , fuzzNoteAfterTouch
         , fuzzControlChange

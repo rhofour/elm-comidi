@@ -229,6 +229,7 @@ midiEvent : Parser s MidiEvent
 midiEvent =
     choice
         [ metaEvent
+        , parseSysEx
         , noteOn
         , noteOff
         , noteAfterTouch
@@ -263,7 +264,6 @@ metaEvent =
             , parseTimeSignature
             , parseKeySignature
             , parseSequencerSpecific
-            , parseSysEx
             , parseUnspecified
             ]
         <?> "meta event"
@@ -379,8 +379,13 @@ parseSequencerSpecific =
 
 parseSysEx : Parser s MidiEvent
 parseSysEx =
-    -- SysEx <$> (String.fromList <$> (bchoice 0xF0 0xF7 *> varInt `andThen` (\l -> count l anyChar))) <?> "system exclusive"
-    SysEx <$> (String.fromList <$> (bchoice 0xF0 0xF7 *> varInt >>= (\l -> count l anyChar))) <?> "system exclusive"
+    SysEx
+        <$> (String.fromList
+                <$> (List.map fromCode
+                        <$> (bchar 0xF0 *> many (brange 0 127) <* bchar 0xF7)
+                    )
+            )
+        <?> "system exclusive"
 
 
 
