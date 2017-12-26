@@ -27,6 +27,7 @@ import Debug exposing (..)
 import Maybe exposing (withDefault)
 import Tuple exposing (first, second)
 import Midi.Types exposing (..)
+import Result exposing (Result)
 
 
 -- low level parsers
@@ -750,7 +751,7 @@ makeTuple a b =
 
 {-| Parse a MIDI event
 -}
-parseMidiEvent : String -> Result.Result String MidiEvent
+parseMidiEvent : String -> Result String MidiEvent
 parseMidiEvent s =
     case Combine.parse (midiEvent Nothing) s of
         Ok ( _, _, n ) ->
@@ -762,7 +763,7 @@ parseMidiEvent s =
 
 {-| entry point - Parse a normalised MIDI file image
 -}
-parse : String -> Result.Result String MidiRecording
+parse : String -> Result String MidiRecording
 parse s =
     case Combine.parse midi s of
         Ok ( _, _, n ) ->
