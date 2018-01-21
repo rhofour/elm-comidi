@@ -191,8 +191,7 @@ generateSysExFileEvent =
                     (Random.int 0 204)
                 )
     in
-        Random.choices
-            [ unescaped, escaped ]
+        Random.choices [ unescaped, escaped ]
 
 
 commonEvents : List (Fuzzer MidiEvent)
@@ -326,6 +325,16 @@ toByteString list =
     String.fromList (List.map Char.fromCode list)
 
 
+largeSysExEvent : MidiEvent
+largeSysExEvent =
+    SysEx F0 ((List.repeat 5000 1) ++ [ 247 ])
+
+
+largeRecording : MidiRecording
+largeRecording =
+    SingleTrack 10 [ ( 0, largeSysExEvent ) ]
+
+
 suite : Test
 suite =
     describe "MIDI tests"
@@ -334,6 +343,16 @@ suite =
                 Expect.equal
                     (Ok event)
                     (parseMidiEvent (toByteString (Generate.event event)))
+        , test "we can handle a large sysex midi event" <|
+            \_ ->
+                Expect.equal
+                    (Ok largeSysExEvent)
+                    (parseMidiEvent (toByteString (Generate.event largeSysExEvent)))
+        , test "we can handle a large midi recording" <|
+            \_ ->
+                Expect.equal
+                    (Ok largeRecording)
+                    (parse (toByteString (Generate.recording largeRecording)))
         , fuzz fuzzMidiRecording "Go from MidiRecording to \"Binary\" and back" <|
             \recording ->
                 Expect.equal
